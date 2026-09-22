@@ -1,0 +1,20 @@
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# .NET
+bin/
+obj/
+*.user
+
+# Environment
+.env
+
+# OS / Editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# Docker
+*.log
