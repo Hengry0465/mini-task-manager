@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmanager-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taskmanager-backend
+  template:
+    metadata:
+      labels:
+        app: taskmanager-backend
+    spec:
+      containers:
+        - name: backend
+          image: taskmanager-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: taskmanager-config
+                  key: ASPNETCORE_ENVIRONMENT
+            - name: ASPNETCORE_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: taskmanager-config
+                  key: ASPNETCORE_URLS
+            - name: Jwt__Issuer
+              valueFrom:
+                configMapKeyRef:
+                  name: taskmanager-config
+                  key: Jwt__Issuer
+            - name: Jwt__Audience
+              valueFrom:
+                configMapKeyRef:
+                  name: taskmanager-config
+                  key: Jwt__Audience
+            - name: Jwt__ExpiryMinutes
+              valueFrom:
+                configMapKeyRef:
+                  name: taskmanager-config
+                  key: Jwt__ExpiryMinutes
+            - name: Jwt__Key
+              valueFrom:
+                secretKeyRef:
+                  name: taskmanager-secret
+                  key: Jwt__Key
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: taskmanager-secret
+                  key: ConnectionStrings__DefaultConnection
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
