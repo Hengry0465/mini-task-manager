@@ -5,6 +5,9 @@ using System.Text;
 using TaskManager.Api.Data;
 using TaskManager.Api.Repositories;
 using TaskManager.Api.Services;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using TaskManager.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +55,9 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(
             new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // ---- Swagger ----
 builder.Services.AddEndpointsApiExplorer();
@@ -101,6 +107,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
