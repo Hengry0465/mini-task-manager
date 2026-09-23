@@ -1,0 +1,47 @@
+<div class="modal-backdrop" (click)="onCancel()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h2>{{ isEditMode ? 'Edit Task' : 'New Task' }}</h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="field">
+        <label for="title">Title *</label>
+        <input id="title" type="text" formControlName="title" />
+        @if (form.get('title')?.invalid && form.get('title')?.touched) {
+          <span class="error">Title is required (max 200 characters).</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" rows="3"></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="priority">Priority</label>
+          <select id="priority" formControlName="priority">
+            @for (p of priorities; track p) {
+              <option [value]="p">{{ p }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="dueDate">Due Date</label>
+          <input id="dueDate" type="date" formControlName="dueDate" />
+        </div>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert">{{ errorMessage }}</div>
+      }
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="onCancel()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="isSaving">
+          {{ isSaving ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

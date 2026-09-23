@@ -1,0 +1,70 @@
+<div class="page">
+  <header class="page-header">
+    <h1>Task Manager</h1>
+    <button class="btn-secondary" (click)="logout()">Logout</button>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn-primary" (click)="openCreateForm()">+ New Task</button>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert">{{ errorMessage() }}</div>
+  }
+
+  @if (isLoading()) {
+    <div class="loading">Loading tasks...</div>
+  } @else if (tasks().length === 0) {
+    <div class="empty">No tasks yet. Create your first one!</div>
+  } @else {
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of tasks(); track task.id) {
+          <tr [class.done]="task.status === 'Done'">
+            <td>
+              <strong>{{ task.title }}</strong>
+              @if (task.description) {
+                <div class="description">{{ task.description }}</div>
+              }
+            </td>
+            <td>
+              <span class="badge" [class]="'priority-' + task.priority.toLowerCase()">
+                {{ task.priority }}
+              </span>
+            </td>
+            <td>{{ task.dueDate || '—' }}</td>
+            <td>
+              <span class="badge" [class]="'status-' + task.status.toLowerCase()">
+                {{ task.status }}
+              </span>
+            </td>
+            <td class="actions">
+              <button class="link" (click)="toggleStatus(task)">
+                {{ task.status === 'Done' ? 'Undo' : 'Mark Done' }}
+              </button>
+              <button class="link" (click)="openEditForm(task)">Edit</button>
+              <button class="link danger" (click)="deleteTask(task)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  @if (showForm()) {
+    <app-task-form
+      [task]="editingTask()"
+      (saved)="onFormSaved()"
+      (cancelled)="closeForm()"
+    ></app-task-form>
+  }
+</div>
